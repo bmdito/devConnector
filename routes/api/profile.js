@@ -39,6 +39,7 @@ router.get('/me', auth, async (req, res) => {
 // @access   Private
 
 router.post('/', [auth, [
+        //check that status and skills have been provided
         check('status', 'Status is required').not().isEmpty(),
         check('skills', 'Skills is required').not().isEmpty()
     ]],
@@ -117,4 +118,78 @@ router.post('/', [auth, [
         }
     }
 )
+
+// @route    GET api/profile   
+// @desc     Get all profiles
+// @access   Private
+
+router.get('/', async (req, res) => {
+    try {
+        const profiles = await Profile.find().populate('user', ['name', 'avatar']);
+        res.json(profiles);
+
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+});
+
+
+// @route    GET api/profile/user/:user_id  
+// @desc     Get Profile by user ID
+// @access   Public
+
+router.get('/user/:user_id', async (req, res) => {
+    try {
+        const profile = await Profile.findOne({
+            user: req.params.user_id
+        }).populate('user', ['name', 'avatar']);
+
+
+        if (!profile)
+            return res.status(400).json({
+                msg: 'There is no profile for this user'
+            });
+
+
+        res.json(profile);
+
+
+    } catch (err) {
+        console.log(err.message);
+        // If the kind of error is ObjectId this is a type
+        if (err.kind == 'ObjectId') {
+            return res.status(400).json({
+                msg: 'Profile not Found'
+            });
+        }
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route    DELETE api/profile   
+// @desc     Delete profile, user, & posts
+// @access   Private
+
+router.delete('/', auth, async (req, res) => {
+    try {
+        //@todo - remove users posts
+
+        //Remove profile
+        await Profile.findOneAndRemove({
+            user: req.user.id
+        });
+        //Remove user
+        await User.findOneAndRemove({
+            _id: req.user.id
+        });
+        res.json({
+            msg: 'User Deleted'
+        });
+
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
