@@ -2,10 +2,11 @@ import React, { Fragment, useState } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { setAlert } from "../../actions/alert";
+import { register } from "../../actions/auth";
 import PropTypes from "prop-types";
 // import axios from "axios";
 
-const Register = ({ setAlert }) => {
+const Register = ({ setAlert, register }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -40,7 +41,7 @@ const Register = ({ setAlert }) => {
       // } catch (err) {
       //   console.error(err.response.data);
       // }
-      console.log("SUCCESS");
+      register({ name, email, password });
     }
   };
 
@@ -58,7 +59,7 @@ const Register = ({ setAlert }) => {
             name="name"
             value={name}
             onChange={e => onChange(e)}
-            required
+            // required
           />
         </div>
         <div className="form-group">
@@ -68,7 +69,7 @@ const Register = ({ setAlert }) => {
             name="email"
             value={email}
             onChange={e => onChange(e)}
-            required
+            // required
           />
 
           <small className="form-text">
@@ -83,7 +84,7 @@ const Register = ({ setAlert }) => {
             name="password"
             value={password}
             onChange={e => onChange(e)}
-            minLength="6"
+            // minLength="6"
           />
         </div>
         <div className="form-group">
@@ -93,7 +94,7 @@ const Register = ({ setAlert }) => {
             name="password2"
             value={password2}
             onChange={e => onChange(e)}
-            minLength="6"
+            // minLength="6"
           />
         </div>
         <input type="submit" className="btn btn-primary" value="Register" />
@@ -106,10 +107,11 @@ const Register = ({ setAlert }) => {
 };
 
 Register.propTypes = {
-  setAlert: PropTypes.func.isRequired
+  setAlert: PropTypes.func.isRequired,
+  register: PropTypes.func.isRequired
 };
 
 export default connect(
   null,
-  { setAlert }
+  { setAlert, register }
 )(Register);
